@@ -1,0 +1,29 @@
+{
+  "replay_start_frame": 370,
+  "pitch": {
+    "start_pos": [
+      -0.8082655385400663,
+      -1.046765340138242,
+      1.4072762652683903
+    ],
+    "velocity": [
+      33.24,
+      5.0,
+      0.2943
+    ]
+  },
+  "bat_target": [
+    1.1861344614599336,
+    -0.7467653401382419,
+    1.4072762652683903
+  ],
+  "peak_bat_speed": 30.41356631361822,
+  "contact_achieved": true,
+  "mlb_arrival_speed": 33.24,
+  "actual_pitch_distance": 1.9944,
+  "results": {
+    "exit_velocity_ms": 18.68925463980578,
+    "exit_velocity_mph": 41.807862629245534,
+    "launch_angle_deg": 4.2235877760748215
+  }
+}
