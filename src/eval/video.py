@@ -5,14 +5,7 @@ import numpy as np
 import imageio
 from pathlib import Path
 
-try:
-    from src.env.batting_env import _QPOS_JOINT_START, _QPOS_JOINT_END
-except ImportError:
-    pass
-
-# Also support CMU env constants (same values)
-_CMU_QPOS_JOINT_START = 7
-_CMU_QPOS_JOINT_END = 63
+from src.env.cmu_batting_env import _QPOS_JOINT_START, _QPOS_JOINT_END
 
 
 def render_episode(env, policy, output_path, max_steps=500, clamp_root=False):
@@ -35,20 +28,19 @@ def render_episode(env, policy, output_path, max_steps=500, clamp_root=False):
     obs, _ = env.reset()
     policy.reset()
 
+    # Resolve capabilities once
+    has_root_state = hasattr(policy, "get_root_state")
+
     # Initialise humanoid pose from policy if clamping root
-    if clamp_root and hasattr(policy, "get_root_state"):
+    if clamp_root and has_root_state:
         pos, quat = policy.get_root_state()
         env.data.qpos[0:3] = pos
         env.data.qpos[3:7] = quat
         env.data.qvel[0:3] = 0.0
         env.data.qvel[3:6] = 0.0
         action_init = policy.get_action(obs)
-        env.data.qpos[_CMU_QPOS_JOINT_START:_CMU_QPOS_JOINT_END] = action_init
+        env.data.qpos[_QPOS_JOINT_START:_QPOS_JOINT_END] = action_init
         mujoco.mj_forward(env.model, env.data)
-        # Update bat position between hands
-        if hasattr(policy, "update_bat"):
-            policy.update_bat()
-            mujoco.mj_forward(env.model, env.data)
         obs = env._get_obs()
         policy.reset()
 
@@ -58,7 +50,7 @@ def render_episode(env, policy, output_path, max_steps=500, clamp_root=False):
     while not done and step < max_steps:
         action = policy.get_action(obs)
 
-        if clamp_root and hasattr(policy, "get_root_state"):
+        if clamp_root and has_root_state:
             pos, quat = policy.get_root_state()
             env.data.qpos[0:3] = pos
             env.data.qpos[3:7] = quat
@@ -66,12 +58,6 @@ def render_episode(env, policy, output_path, max_steps=500, clamp_root=False):
             env.data.qvel[3:6] = 0.0
 
         obs, _, terminated, truncated, info = env.step(action)
-
-        # After physics step, update bat to follow hands
-        if hasattr(policy, "update_bat"):
-            mujoco.mj_forward(env.model, env.data)
-            policy.update_bat()
-            mujoco.mj_forward(env.model, env.data)
 
         done = terminated or truncated
         frame = env.render()

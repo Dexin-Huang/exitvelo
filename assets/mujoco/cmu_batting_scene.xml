@@ -4,7 +4,7 @@
     CMU humanoid batting scene.
     Based on dm_control's humanoid_CMU.xml with added bat and ball.
     The humanoid skeleton matches CMU mocap (56 actuated joints, 63 qpos).
-    Bat is a free body positioned between both hands each frame.
+    Bat is attached to right hand via hinge joint.
     Ball is a free body.
   -->
 

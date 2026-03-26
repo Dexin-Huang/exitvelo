@@ -175,7 +175,7 @@ def main():
     env2.reset()
 
     # Remove ball from view by moving it far away
-    env2.data.qpos[63:66] = [100, 100, 100]
+    env2.data.qpos[64:67] = [100, 100, 100]
 
     # Replay the full swing portion
     for t in range(swing_start, swing_end):

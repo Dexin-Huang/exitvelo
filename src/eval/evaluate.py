@@ -3,14 +3,7 @@
 import mujoco
 import numpy as np
 
-try:
-    from src.env.batting_env import _QPOS_JOINT_START, _QPOS_JOINT_END
-except ImportError:
-    pass
-
-# Also support CMU env constants (same values)
-_CMU_QPOS_JOINT_START = 7
-_CMU_QPOS_JOINT_END = 63
+from src.env.cmu_batting_env import _QPOS_JOINT_START, _QPOS_JOINT_END
 
 
 def evaluate_policy(env, policy, n_episodes=50, seed=42, clamp_root=False):
@@ -31,12 +24,15 @@ def evaluate_policy(env, policy, n_episodes=50, seed=42, clamp_root=False):
     """
     results = []
 
+    # Resolve capabilities once before the loop
+    has_root_state = hasattr(policy, "get_root_state")
+
     for ep in range(n_episodes):
         obs, info = env.reset(seed=seed + ep)
         policy.reset()
 
         # If clamping root, initialise the humanoid pose from the policy
-        if clamp_root and hasattr(policy, "get_root_state"):
+        if clamp_root and has_root_state:
             pos, quat = policy.get_root_state()
             env.data.qpos[0:3] = pos
             env.data.qpos[3:7] = quat
@@ -44,12 +40,8 @@ def evaluate_policy(env, policy, n_episodes=50, seed=42, clamp_root=False):
             env.data.qvel[3:6] = 0.0
             # Also set the joint targets to the first frame
             action_init = policy.get_action(obs)
-            env.data.qpos[_CMU_QPOS_JOINT_START:_CMU_QPOS_JOINT_END] = action_init
+            env.data.qpos[_QPOS_JOINT_START:_QPOS_JOINT_END] = action_init
             mujoco.mj_forward(env.model, env.data)
-            # Update bat position between hands
-            if hasattr(policy, "update_bat"):
-                policy.update_bat()
-                mujoco.mj_forward(env.model, env.data)
             obs = env._get_obs()
             # Reset the policy step counter (get_action incremented it)
             policy.reset()
@@ -66,7 +58,7 @@ def evaluate_policy(env, policy, n_episodes=50, seed=42, clamp_root=False):
             action = policy.get_action(obs)
 
             # Optionally clamp the humanoid root to the mocap trajectory
-            if clamp_root and hasattr(policy, "get_root_state"):
+            if clamp_root and has_root_state:
                 pos, quat = policy.get_root_state()
                 env.data.qpos[0:3] = pos
                 env.data.qpos[3:7] = quat
@@ -74,12 +66,6 @@ def evaluate_policy(env, policy, n_episodes=50, seed=42, clamp_root=False):
                 env.data.qvel[3:6] = 0.0
 
             obs, reward, terminated, truncated, info = env.step(action)
-
-            # After physics step, update bat to follow hands
-            if hasattr(policy, "update_bat"):
-                mujoco.mj_forward(env.model, env.data)
-                policy.update_bat()
-                mujoco.mj_forward(env.model, env.data)
 
             done = terminated or truncated
             ep_data["steps"] += 1

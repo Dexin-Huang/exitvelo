@@ -2,7 +2,8 @@
 
 This replaces the old 17-joint gymnasium humanoid batting env with one that uses
 the dm_control CMU humanoid skeleton, which has a 1:1 joint mapping with CMU
-mocap data. No retargeting needed.
+mocap data. The bat is attached to the right hand via a hinge joint (bat_grip).
+No retargeting needed.
 """
 
 from pathlib import Path
@@ -38,16 +39,14 @@ _SENSOR_BALL_VEL = slice(25, 28)
 class CMUBattingEnv(gym.Env):
     """Gymnasium environment for CMU humanoid baseball batting.
 
-    Uses the dm_control CMU humanoid skeleton (56 actuated joints, 63 qpos)
-    with a bat as a free body positioned between both hands each frame,
+    Uses the dm_control CMU humanoid skeleton (56 actuated joints, 64 qpos)
+    with a bat attached to the right hand via a hinge joint (bat_grip),
     and a baseball as a free body.
 
-    Observation (130-dim):
+    Observation (140-dim):
         joint_pos (56) + joint_vel (56) + root_pos (3) + root_quat (4) +
         root_lin_vel (3) + root_ang_vel (3) + bat_tip_pos (3) + bat_tip_vel (3) +
         ball_pos (3) + ball_vel (3) + ball_rel (3)
-        Total = 56 + 56 + 3 + 4 + 3 + 3 + 3 + 3 + 3 + 3 + 3 = 140
-        (Wait: 56+56+3+4+3+3+3+3+3+3+3 = 140)
 
     Action (56-dim):
         Target joint positions fed through PD control.
@@ -61,7 +60,6 @@ class CMUBattingEnv(gym.Env):
     MLB_PITCH_Y = 0.0
     MLB_PITCH_HEIGHT = 1.40
     MLB_PITCH_SPEED = 33.24
-    MLB_PITCH_VZ = -0.002
 
     def __init__(
         self,
@@ -96,6 +94,11 @@ class CMUBattingEnv(gym.Env):
             else None
         )
 
+        # Pre-compute actuator-to-joint index mapping (vectorised PD control)
+        jnt_ids = self.model.actuator_trnid[:, 0]
+        self._act_qpos_idx = self.model.jnt_qposadr[jnt_ids]  # (56,)
+        self._act_qvel_idx = self.model.jnt_dofadr[jnt_ids]    # (56,)
+
         # PD gains for the 56 CMU joints
         # Group joints by type and assign appropriate gains
         self.kp = self._build_kp()
@@ -104,8 +107,7 @@ class CMUBattingEnv(gym.Env):
         # Build joint limits for action space (in radians)
         joint_ranges = np.zeros((_N_JOINTS, 2))
         for i in range(_N_JOINTS):
-            # hinge joints start at joint index 1 (0 is root free)
-            jnt_id = i + 1  # skip root free joint
+            jnt_id = self.model.actuator_trnid[i, 0]
             joint_ranges[i] = self.model.jnt_range[jnt_id]
 
         self.joint_lo = joint_ranges[:, 0].astype(np.float32)
@@ -128,6 +130,14 @@ class CMUBattingEnv(gym.Env):
 
         # Contact tracking
         self._contact_made = False
+
+        # Cache contact geom IDs for fast lookup
+        self._bat_geom_ids = set()
+        for name in ['bat_barrel', 'bat_handle', 'bat_taper', 'bat_end', 'bat_knob']:
+            gid = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, name)
+            if gid >= 0:
+                self._bat_geom_ids.add(gid)
+        self._ball_geom_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, 'ball_geom')
 
     def _build_kp(self) -> np.ndarray:
         """Build per-joint PD proportional gains.
@@ -250,13 +260,10 @@ class CMUBattingEnv(gym.Env):
     def step(self, action):
         action = np.clip(action, self.joint_lo, self.joint_hi)
 
-        # PD control per actuator — reads correct qpos/qvel for each joint
-        ctrl = np.zeros(self.model.nu)
-        for i in range(self.model.nu):
-            jnt_id = self.model.actuator_trnid[i, 0]
-            q_i = self.data.qpos[self.model.jnt_qposadr[jnt_id]]
-            qdot_i = self.data.qvel[self.model.jnt_dofadr[jnt_id]]
-            ctrl[i] = self.kp[i] * (action[i] - q_i) - self.kd[i] * qdot_i
+        # Vectorised PD control using pre-computed index arrays
+        q = self.data.qpos[self._act_qpos_idx]
+        qdot = self.data.qvel[self._act_qvel_idx]
+        ctrl = self.kp * (action - q) - self.kd * qdot
 
         # Clip to actuator control range
         ctrl_range = self.model.actuator_ctrlrange
@@ -269,8 +276,12 @@ class CMUBattingEnv(gym.Env):
 
         self.step_count += 1
 
-        # Check contact
-        contact, contact_info = detect_bat_ball_contact(self.model, self.data)
+        # Check contact (pass cached geom IDs to avoid per-step name lookups)
+        contact, contact_info = detect_bat_ball_contact(
+            self.model, self.data,
+            bat_geom_ids=self._bat_geom_ids,
+            ball_geom_id=self._ball_geom_id,
+        )
         if contact:
             self._contact_made = True
 
@@ -320,23 +331,21 @@ class CMUBattingEnv(gym.Env):
     # ------------------------------------------------------------------
     def _get_obs(self):
         # Read only the 56 actuated joints (skips bat_grip which has no actuator)
-        joint_pos = np.array([self.data.qpos[self.model.jnt_qposadr[self.model.actuator_trnid[i, 0]]]
-                              for i in range(self.model.nu)])
-        joint_vel = np.array([self.data.qvel[self.model.jnt_dofadr[self.model.actuator_trnid[i, 0]]]
-                              for i in range(self.model.nu)])
-        root_pos = self.data.qpos[0:3].copy()                                    # 3
-        root_quat = self.data.qpos[3:7].copy()                                   # 4
-        root_lin_vel = self.data.qvel[0:3].copy()                                 # 3
-        root_ang_vel = self.data.qvel[3:6].copy()                                 # 3
+        joint_pos = self.data.qpos[self._act_qpos_idx].copy()
+        joint_vel = self.data.qvel[self._act_qvel_idx].copy()
+        root_pos = self.data.qpos[0:3]
+        root_quat = self.data.qpos[3:7]
+        root_lin_vel = self.data.qvel[0:3]
+        root_ang_vel = self.data.qvel[3:6]
 
         # Sensor data
-        bat_tip_pos = self.data.sensordata[_SENSOR_BAT_TIP_POS].copy()    # 3
-        bat_tip_vel = self.data.sensordata[_SENSOR_BAT_TIP_VEL].copy()    # 3
-        ball_pos = self.data.sensordata[_SENSOR_BALL_POS].copy()            # 3
-        ball_vel = self.data.sensordata[_SENSOR_BALL_VEL].copy()            # 3
+        bat_tip_pos = self.data.sensordata[_SENSOR_BAT_TIP_POS]
+        bat_tip_vel = self.data.sensordata[_SENSOR_BAT_TIP_VEL]
+        ball_pos = self.data.sensordata[_SENSOR_BALL_POS]
+        ball_vel = self.data.sensordata[_SENSOR_BALL_VEL]
 
         # Relative position: ball - bat_tip
-        ball_rel = ball_pos - bat_tip_pos                                     # 3
+        ball_rel = ball_pos - bat_tip_pos
 
         obs = np.concatenate([
             joint_pos,      # 56
@@ -378,37 +387,25 @@ class CMUBattingEnv(gym.Env):
     # Utility: set qpos directly (for mocap replay)
     # ------------------------------------------------------------------
     def set_humanoid_qpos(self, qpos: np.ndarray):
-        """Set humanoid qpos (root + 56 hinge joints).
+        """Set humanoid qpos (root + hinge joints).
 
-        Accepts 63-dim (7 root + 56 joints), which maps directly
-        to qpos[0:63].  Useful for mocap replay.
+        Accepts 63-dim (7 root + 56 joints) or 64-dim (7 root + 57 joints
+        including bat_grip), which maps directly to qpos[0:n].
+        Useful for mocap replay.
         """
         n = len(qpos)
-        assert n == 63, f"Expected 63 dim qpos, got {n}"
-        self.data.qpos[:63] = qpos
+        assert n in (63, 64), f"Expected 63 or 64 dim qpos, got {n}"
+        self.data.qpos[:n] = qpos
 
     def set_humanoid_qvel(self, qvel: np.ndarray):
-        """Set humanoid qvel (root + 56 hinge DOFs).
+        """Set humanoid qvel (root + hinge DOFs).
 
-        Accepts 62-dim (6 root + 56 joints), which maps directly
-        to qvel[0:62].
+        Accepts 62-dim (6 root + 56 joints) or 63-dim (6 root + 57 DOFs
+        including bat_grip), which maps directly to qvel[0:n].
         """
         n = len(qvel)
-        assert n == 62, f"Expected 62 dim qvel, got {n}"
-        self.data.qvel[:62] = qvel
-
-    def set_bat_state(self, pos: np.ndarray, quat: np.ndarray):
-        """Set the bat free-body position and orientation.
-
-        Parameters
-        ----------
-        pos : (3,) world position of the bat body origin
-        quat : (4,) quaternion [w, x, y, z] for bat orientation
-        """
-        self.data.qpos[_BAT_QPOS_START:_BAT_QPOS_START + 3] = pos
-        self.data.qpos[_BAT_QPOS_START + 3:_BAT_QPOS_START + 7] = quat
-        # Zero velocity so bat doesn't fly away
-        self.data.qvel[_BAT_QVEL_START:_BAT_QVEL_START + 6] = 0.0
+        assert n in (62, 63), f"Expected 62 or 63 dim qvel, got {n}"
+        self.data.qvel[:n] = qvel
 
     # ------------------------------------------------------------------
     # Cleanup

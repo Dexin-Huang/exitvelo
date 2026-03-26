@@ -21,6 +21,20 @@ from dm_control import mujoco as dm_mujoco
 from dm_control.suite import humanoid_CMU
 from dm_control.suite.utils import parse_amc
 
+# Module-level caches so the dm_control physics and parsed AMC data are not
+# reloaded on every instantiation.
+_PHYSICS_CACHE = None
+_AMC_CACHE = {}
+
+
+def _get_physics():
+    """Return a cached dm_control CMU humanoid physics object."""
+    global _PHYSICS_CACHE
+    if _PHYSICS_CACHE is None:
+        xml_string, assets = humanoid_CMU.get_model_and_assets()
+        _PHYSICS_CACHE = dm_mujoco.Physics.from_xml_string(xml_string, assets)
+    return _PHYSICS_CACHE
+
 
 class CMUMocapReplay:
     """Open-loop replay of CMU mocap trajectory for the CMU humanoid.
@@ -47,12 +61,15 @@ class CMUMocapReplay:
         """
         self.amc_path = Path(amc_path)
 
-        # Load the CMU humanoid physics to get the joint mapping
-        xml_string, assets = humanoid_CMU.get_model_and_assets()
-        physics = dm_mujoco.Physics.from_xml_string(xml_string, assets)
+        # Use cached physics and AMC parse results
+        physics = _get_physics()
 
-        # Convert AMC to qpos/qvel trajectories
-        converted = parse_amc.convert(str(self.amc_path), physics, control_dt)
+        cache_key = (str(self.amc_path), control_dt)
+        if cache_key in _AMC_CACHE:
+            converted = _AMC_CACHE[cache_key]
+        else:
+            converted = parse_amc.convert(str(self.amc_path), physics, control_dt)
+            _AMC_CACHE[cache_key] = converted
 
         # converted.qpos shape: (nq, n_frames) = (63, T)
         # converted.qvel shape: (nv, n_frames-1) = (62, T-1)
