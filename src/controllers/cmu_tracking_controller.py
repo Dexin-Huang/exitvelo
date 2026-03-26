@@ -12,7 +12,7 @@ import numpy as np
 
 from src.motion.cmu_replay import CMUMocapReplay
 
-_BAT_GRIP_SCENE_IDX = 53  # bat_grip joint inserted after rhandrx in action array
+_BAT_GRIP_SCENE_IDX = 41  # bat_grip joint inserted after lhandrx in action array
 
 
 class CMUTrackingController:

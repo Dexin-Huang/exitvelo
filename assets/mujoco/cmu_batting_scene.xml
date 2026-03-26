@@ -206,6 +206,27 @@
                       <joint name="lhandrx" axis="1 0 0" range="-90 90"/>
                       <geom name="lhand" type="ellipsoid" size=".048 0.02 0.06" pos="0 -0.047 0" quat="0 0 -1 -1"/>
 
+                      <!-- BAT on left hand (lead/bottom hand) -->
+                      <body name="bat" pos="0 -0.07 0" euler="0 -90 0">
+                        <joint name="bat_grip" type="hinge" axis="0 0 1"
+                               range="-30 30" damping="5" stiffness="20" armature="0.01"/>
+                        <geom name="bat_visual" type="mesh" mesh="bat_mesh"
+                              contype="0" conaffinity="0" rgba="0.65 0.45 0.25 1" mass="0.001"/>
+                        <geom name="bat_knob" type="sphere" size="0.020"
+                              pos="0 0 0.015" mass="0.03" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
+                        <geom name="bat_handle" type="capsule" size="0.014" fromto="0 0 0.04 0 0 0.30"
+                              mass="0.15" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
+                        <geom name="bat_taper" type="capsule" size="0.035" fromto="0 0 0.28 0 0 0.50"
+                              mass="0.15" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
+                        <geom name="bat_barrel" type="capsule" size="0.045" fromto="0 0 0.48 0 0 0.80"
+                              mass="0.50" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
+                        <geom name="bat_end" type="sphere" size="0.030"
+                              pos="0 0 0.82" mass="0.07" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
+                        <site name="bat_tip" pos="0 0 0.84" size="0.005"/>
+                        <site name="bat_sweet" pos="0 0 0.65" size="0.005"/>
+                        <site name="bat_mid" pos="0 0 0.42" size="0.005"/>
+                      </body>
+
                       <body name="lfingers" pos="0 -0.08 0">
                         <joint name="lfingersrx" axis="1 0 0" range="0 90"/>
                         <geom name="lfinger_placeholder" type="sphere" size="0.005" mass="0.01" rgba="0 0 0 0" contype="0" conaffinity="0"/>
@@ -243,27 +264,6 @@
                              ref="-15" stiffness="10" damping="2"/>
                       <geom name="rhand" type="ellipsoid" size=".048 0.02 .06" pos="0 -0.047 0" quat="0 0 1 1"/>
 
-                      <!-- BAT on right hand -->
-                      <body name="bat" pos="0 -0.07 0" euler="0 90 0">
-                        <joint name="bat_grip" type="hinge" axis="0 0 1"
-                               range="-30 30" damping="5" stiffness="20" armature="0.01"/>
-                        <geom name="bat_visual" type="mesh" mesh="bat_mesh"
-                              contype="0" conaffinity="0" rgba="0.65 0.45 0.25 1" mass="0.001"/>
-                        <geom name="bat_knob" type="sphere" size="0.020"
-                              pos="0 0 0.015" mass="0.03" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
-                        <geom name="bat_handle" type="capsule" size="0.014" fromto="0 0 0.04 0 0 0.30"
-                              mass="0.15" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
-                        <geom name="bat_taper" type="capsule" size="0.035" fromto="0 0 0.28 0 0 0.50"
-                              mass="0.15" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
-                        <geom name="bat_barrel" type="capsule" size="0.045" fromto="0 0 0.48 0 0 0.80"
-                              mass="0.50" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
-                        <geom name="bat_end" type="sphere" size="0.030"
-                              pos="0 0 0.82" mass="0.07" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
-                        <site name="bat_tip" pos="0 0 0.84" size="0.005"/>
-                        <site name="bat_sweet" pos="0 0 0.65" size="0.005"/>
-                        <site name="bat_mid" pos="0 0 0.42" size="0.005"/>
-                      </body>
-
                       <body name="rfingers" pos="0 -0.08 0">
                         <joint name="rfingersrx" axis="1 0 0" range="0 90"/>
                         <geom name="rfinger_placeholder" type="sphere" size="0.005" mass="0.01" rgba="0 0 0 0" contype="0" conaffinity="0"/>
@@ -293,6 +293,39 @@
             material="ball_mat"/>
       <site name="ball_center" pos="0 0 0" size="0.01"/>
     </body>
+    <!-- ===== HOME PLATE + BATTER'S BOX + STRIKE ZONE (visual only) ===== -->
+    <!-- Home plate at origin (0,0). Pitcher at -Y. Batter at +Y. -->
+    <!-- Right-handed batter uses LEFT box (shifted in +X from plate). -->
+    <!-- Box: 1.22m wide (X) x 1.83m deep (Y), 0.15m gap from plate edge. -->
+
+    <!-- Home plate (pentagon approximated as rotated square) -->
+    <!-- 17 inches = 0.432m wide -->
+    <geom name="home_plate" type="box" size="0.153 0.153 0.003"
+          pos="0 0 0.001" euler="0 0 45"
+          rgba="1 1 0.9 0.8" contype="0" conaffinity="0"/>
+
+    <!-- Left batter's box (right-handed hitter, +X side of plate) -->
+    <!-- Inner edge: plate edge (0.216m) + gap (0.15m) = 0.366m from center -->
+    <!-- Outer edge: 0.366 + 1.22m = 1.586m from center -->
+    <!-- Y extent: centered on plate, 1.83m deep = -0.915 to +0.915 -->
+    <geom name="box_front" type="box" size="0.61 0.005 0.002"
+          pos="0.976 -0.915 0.001" rgba="1 1 1 0.7" contype="0" conaffinity="0"/>
+    <geom name="box_back" type="box" size="0.61 0.005 0.002"
+          pos="0.976 0.915 0.001" rgba="1 1 1 0.7" contype="0" conaffinity="0"/>
+    <geom name="box_inner" type="box" size="0.005 0.915 0.002"
+          pos="0.366 0.0 0.001" rgba="1 1 1 0.7" contype="0" conaffinity="0"/>
+    <geom name="box_outer" type="box" size="0.005 0.915 0.002"
+          pos="1.586 0.0 0.001" rgba="1 1 1 0.7" contype="0" conaffinity="0"/>
+
+    <!-- Strike zone (transparent rectangle over home plate) -->
+    <!-- Width: 0.432m (plate width), centered at X=0 -->
+    <!-- Height: knees (0.53m) to mid-chest (1.22m) -->
+    <!-- Depth: plate depth 0.216m in Y -->
+    <!-- Strike zone scaled for 1.83m batter: knees 0.71m to mid-chest 1.64m -->
+    <geom name="strike_zone" type="box" size="0.216 0.108 0.465"
+          pos="0 0 1.175"
+          rgba="1 0.3 0.0 0.10" contype="0" conaffinity="0"/>
+
   </worldbody>
 
   <!-- Contact exclusions from original + bat-ball contact pairs -->
@@ -309,6 +342,12 @@
     <pair geom1="bat_end" geom2="ball_geom" condim="4" solref="0.002 1" solimp="0.99 0.99 0.001"/>
     <pair geom1="bat_knob" geom2="ball_geom" condim="4" solref="0.002 1" solimp="0.99 0.99 0.001"/>
   </contact>
+
+  <!-- Right hand (top hand) position-locked to bat handle above left hand -->
+  <equality>
+    <connect body1="rhand" body2="bat" anchor="-0.04 0.04 0.06"
+             solref="0.005 1" solimp="0.95 0.99 0.001"/>
+  </equality>
 
   <!-- All 56 actuators from the CMU humanoid -->
   <actuator>
