@@ -250,23 +250,13 @@ class CMUBattingEnv(gym.Env):
     def step(self, action):
         action = np.clip(action, self.joint_lo, self.joint_hi)
 
-        # PD control: torque = kp * (target - q) - kd * qdot
-        q = self.data.qpos[_QPOS_JOINT_START:_QPOS_JOINT_END]
-        qdot = self.data.qvel[_QVEL_JOINT_START:_QVEL_JOINT_END]
-        torque = self.kp * (action - q) - self.kd * qdot
-
-        # Map torques to actuators
-        # The actuator order differs from the qpos joint order.
-        # We need to map: for each actuator, find its corresponding joint,
-        # then look up the PD torque for that joint.
+        # PD control per actuator — reads correct qpos/qvel for each joint
         ctrl = np.zeros(self.model.nu)
-        for act_idx in range(self.model.nu):
-            # Get the joint that this actuator drives
-            jnt_id = self.model.actuator_trnid[act_idx, 0]
-            # The qpos hinge joint index (0-indexed from first hinge)
-            hinge_idx = jnt_id - 1  # subtract 1 for the root free joint
-            if 0 <= hinge_idx < _N_JOINTS:
-                ctrl[act_idx] = torque[hinge_idx]
+        for i in range(self.model.nu):
+            jnt_id = self.model.actuator_trnid[i, 0]
+            q_i = self.data.qpos[self.model.jnt_qposadr[jnt_id]]
+            qdot_i = self.data.qvel[self.model.jnt_dofadr[jnt_id]]
+            ctrl[i] = self.kp[i] * (action[i] - q_i) - self.kd[i] * qdot_i
 
         # Clip to actuator control range
         ctrl_range = self.model.actuator_ctrlrange
@@ -329,8 +319,11 @@ class CMUBattingEnv(gym.Env):
     # Observation
     # ------------------------------------------------------------------
     def _get_obs(self):
-        joint_pos = self.data.qpos[_QPOS_JOINT_START:_QPOS_JOINT_END].copy()  # 56
-        joint_vel = self.data.qvel[_QVEL_JOINT_START:_QVEL_JOINT_END].copy()   # 56
+        # Read only the 56 actuated joints (skips bat_grip which has no actuator)
+        joint_pos = np.array([self.data.qpos[self.model.jnt_qposadr[self.model.actuator_trnid[i, 0]]]
+                              for i in range(self.model.nu)])
+        joint_vel = np.array([self.data.qvel[self.model.jnt_dofadr[self.model.actuator_trnid[i, 0]]]
+                              for i in range(self.model.nu)])
         root_pos = self.data.qpos[0:3].copy()                                    # 3
         root_quat = self.data.qpos[3:7].copy()                                   # 4
         root_lin_vel = self.data.qvel[0:3].copy()                                 # 3
