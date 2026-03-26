@@ -207,21 +207,24 @@
                       <geom name="lhand" type="ellipsoid" size=".048 0.02 0.06" pos="0 -0.047 0" quat="0 0 -1 -1"/>
 
                       <!-- BAT on left hand (lead/bottom hand) -->
-                      <body name="bat" pos="0 -0.07 0" euler="0 -90 0">
+                      <!-- Hand -Y = toward fingertips. Z = out of palm. -->
+                      <!-- Place bat at palm center, extending perpendicular to forearm -->
+                      <body name="bat" pos="0.20 -0.047 0" euler="30 -90 -10">
                         <joint name="bat_grip" type="hinge" axis="0 0 1"
                                range="-30 30" damping="5" stiffness="20" armature="0.01"/>
                         <geom name="bat_visual" type="mesh" mesh="bat_mesh"
                               contype="0" conaffinity="0" rgba="0.65 0.45 0.25 1" mass="0.001"/>
-                        <geom name="bat_knob" type="sphere" size="0.020"
-                              pos="0 0 0.015" mass="0.03" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
-                        <geom name="bat_handle" type="capsule" size="0.014" fromto="0 0 0.04 0 0 0.30"
+                        <!-- Collision primitives matching Model 271 profile -->
+                        <geom name="bat_knob" type="sphere" size="0.025"
+                              pos="0 0 0.008" mass="0.03" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
+                        <geom name="bat_handle" type="capsule" size="0.013" fromto="0 0 0.03 0 0 0.30"
                               mass="0.15" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
-                        <geom name="bat_taper" type="capsule" size="0.035" fromto="0 0 0.28 0 0 0.50"
+                        <geom name="bat_taper" type="capsule" size="0.022" fromto="0 0 0.28 0 0 0.55"
                               mass="0.15" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
-                        <geom name="bat_barrel" type="capsule" size="0.045" fromto="0 0 0.48 0 0 0.80"
+                        <geom name="bat_barrel" type="capsule" size="0.032" fromto="0 0 0.55 0 0 0.79"
                               mass="0.50" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
-                        <geom name="bat_end" type="sphere" size="0.030"
-                              pos="0 0 0.82" mass="0.07" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
+                        <geom name="bat_end" type="sphere" size="0.025"
+                              pos="0 0 0.83" mass="0.07" contype="2" conaffinity="2" rgba="0 0 0 0" group="3"/>
                         <site name="bat_tip" pos="0 0 0.84" size="0.005"/>
                         <site name="bat_sweet" pos="0 0 0.65" size="0.005"/>
                         <site name="bat_mid" pos="0 0 0.42" size="0.005"/>
