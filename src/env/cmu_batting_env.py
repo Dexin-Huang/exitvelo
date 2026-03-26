@@ -2,7 +2,7 @@
 
 This replaces the old 17-joint gymnasium humanoid batting env with one that uses
 the dm_control CMU humanoid skeleton, which has a 1:1 joint mapping with CMU
-mocap data. The bat is attached to the right hand via a hinge joint (bat_grip).
+mocap data. The bat is attached to the left hand via a hinge joint (bat_grip).
 No retargeting needed.
 """
 
@@ -40,7 +40,7 @@ class CMUBattingEnv(gym.Env):
     """Gymnasium environment for CMU humanoid baseball batting.
 
     Uses the dm_control CMU humanoid skeleton (56 actuated joints, 64 qpos)
-    with a bat attached to the right hand via a hinge joint (bat_grip),
+    with a bat attached to the left hand via a hinge joint (bat_grip),
     and a baseball as a free body.
 
     Observation (140-dim):
@@ -173,16 +173,14 @@ class CMUBattingEnv(gym.Env):
           upperbackrx, upperbackry, upperbackrz,
           upperneckrx, upperneckry, upperneckrz
 
-        But we need kp for qpos-ordered joints (not actuator order).
-        The qpos order follows the body tree (joint order in XML).
+        We build kp in actuator order so it aligns with the vectorised PD
+        control in step(), which indexes qpos/qvel via _act_qpos_idx/_act_qvel_idx
+        (both derived from actuator_trnid).
         """
-        # Get actuator names to figure out the mapping
-        # Actually, kp is indexed by qpos hinge joint order, not actuator order.
-        # The qpos hinge joint order is determined by the body tree in the XML.
         kp = np.zeros(_N_JOINTS)
 
         for i in range(_N_JOINTS):
-            jnt_id = i + 1  # skip root free joint
+            jnt_id = self.model.actuator_trnid[i, 0]
             jnt_name = self.model.joint(jnt_id).name
 
             # Assign gains based on joint type

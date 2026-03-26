@@ -1,7 +1,7 @@
 """Tracking controller for the CMU humanoid batting environment.
 
-Replays CMU mocap data. Bat is on the right hand with a bat_grip hinge joint
-inserted at scene action index 53.
+Replays CMU mocap data. Bat is on the left hand with a bat_grip hinge joint
+inserted at scene action index 41.
 """
 
 from __future__ import annotations
@@ -36,7 +36,7 @@ class CMUTrackingController:
 
     def get_action(self, obs: np.ndarray | None = None) -> np.ndarray:
         mocap_joints = self.replay.get_action(obs)  # (56,)
-        # Insert bat_grip=0 at index 53
+        # Insert bat_grip=0 at index 41
         scene_action = np.zeros(57, dtype=np.float64)
         scene_action[:_BAT_GRIP_SCENE_IDX] = mocap_joints[:_BAT_GRIP_SCENE_IDX]
         scene_action[_BAT_GRIP_SCENE_IDX] = 0.0
