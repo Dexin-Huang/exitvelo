@@ -11,8 +11,9 @@
   <!-- Inlined from dm_control/suite/common/visual.xml -->
   <visual>
     <headlight ambient=".4 .4 .4" diffuse=".8 .8 .8" specular="0.1 0.1 0.1"/>
-    <map znear=".01"/>
-    <quality shadowsize="2048"/>
+    <map znear=".01" zfar="500"/>
+    <quality shadowsize="4096"/>
+    <global offwidth="1920" offheight="1080"/>
   </visual>
 
   <statistic extent="2" center="0 0 1"/>
