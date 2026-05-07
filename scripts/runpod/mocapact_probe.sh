@@ -23,6 +23,7 @@ set -euo pipefail
 #   TERMINATION_ERROR_THRESHOLD=0.3
 
 EXITVELO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+export PYTHONPATH="${EXITVELO_ROOT}:${PYTHONPATH:-}"
 MOCAPACT_ROOT="${MOCAPACT_ROOT:-/workspace/MoCapAct}"
 OUT_DIR="${OUT_DIR:-${EXITVELO_ROOT}/results/runpod_mocapact_probe}"
 PYTHON_BIN="${PYTHON_BIN:-python3.8}"
