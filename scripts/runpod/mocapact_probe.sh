@@ -17,6 +17,8 @@ set -euo pipefail
 #   PROBE_CANDIDATES="CMU_124_07:260:360 CMU_124_08:260:360 CMU_124_06:0:189 CMU_016_22:0:82"
 #   REF_STEPS=0
 #   MOCAP_PATH=/path/to/custom/cmu_mocap.hdf5
+#   BUILD_CUSTOM_MOCAP_HDF5=1
+#   CUSTOM_MOCAP_PATH=/workspace/exitvelo/results/mocapact_custom_hdf5/CMU_124_07_from_amc_30hz.h5
 #   MIN_STEPS=10
 #   TERMINATION_ERROR_THRESHOLD=0.3
 
@@ -32,9 +34,13 @@ MIN_STEPS="${MIN_STEPS:-10}"
 GHOST_OFFSET="${GHOST_OFFSET:-1.0}"
 TERMINATION_ERROR_THRESHOLD="${TERMINATION_ERROR_THRESHOLD:-0.3}"
 ACT_NOISE="${ACT_NOISE:-0.0}"
+BUILD_CUSTOM_MOCAP_HDF5="${BUILD_CUSTOM_MOCAP_HDF5:-0}"
+CUSTOM_MOCAP_PATH="${CUSTOM_MOCAP_PATH:-${EXITVELO_ROOT}/results/mocapact_custom_hdf5/CMU_124_07_from_amc_30hz.h5}"
+CUSTOM_MOCAP_CONTROL_DT="${CUSTOM_MOCAP_CONTROL_DT:-0.03}"
 
 DEFAULT_PROBE_CANDIDATES="CMU_124_07:260:360:primary_exitvelo_target CMU_124_08:260:360:secondary_exitvelo_raw_clip CMU_124_06:0:189:nearby_subject124_split_fallback CMU_016_22:0:82:known_mocapact_control"
-PROBE_CANDIDATES="${PROBE_CANDIDATES:-${DEFAULT_PROBE_CANDIDATES}}"
+USER_PROBE_CANDIDATES="${PROBE_CANDIDATES:-}"
+PROBE_CANDIDATES="${USER_PROBE_CANDIDATES:-${DEFAULT_PROBE_CANDIDATES}}"
 
 mkdir -p "${OUT_DIR}"
 
@@ -66,8 +72,21 @@ fi
 source .venv/bin/activate
 python -m pip install -U pip wheel setuptools
 python -m pip install -e .
+python -m pip install "numpy==1.26.4" "protobuf==3.20.3" h5py
 
 cd "${EXITVELO_ROOT}"
+if [[ "${BUILD_CUSTOM_MOCAP_HDF5}" == "1" ]]; then
+  python scripts/io/export_cmu_amc_to_mocapact_hdf5.py \
+    --out "${CUSTOM_MOCAP_PATH}" \
+    --summary "${CUSTOM_MOCAP_PATH%.h5}_summary.json" \
+    --control-dt "${CUSTOM_MOCAP_CONTROL_DT}" \
+    --overwrite
+  MOCAP_PATH="${CUSTOM_MOCAP_PATH}"
+  if [[ -z "${USER_PROBE_CANDIDATES}" && -z "${CLIP_IDS:-}" ]]; then
+    PROBE_CANDIDATES="CMU_124_07:87:120:custom_hdf5_exitvelo_target"
+  fi
+fi
+
 ARGS=()
 if [[ -n "${CLIP_IDS:-}" ]]; then
   for clip_id in ${CLIP_IDS}; do
