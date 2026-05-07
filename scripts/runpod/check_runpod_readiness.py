@@ -19,7 +19,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUT = PROJECT_ROOT / "results" / "final" / "runpod_readiness_report.json"
 AUTH_ENV_NAMES = ("RUNPOD_API_KEY", "RUNPOD_API_TOKEN")
-TOOL_NAMES = ("runpod", "git", "ssh", "bash")
+TOOL_NAMES = ("runpodctl", "git", "ssh", "bash")
 
 
 def _tool_report(name: str) -> dict:
@@ -57,7 +57,7 @@ def build_report() -> dict:
 
     can_launch_from_shell = (
         auth["any_runpod_auth_env_present"]
-        and tools["runpod"]["available"]
+        and tools["runpodctl"]["available"]
         and tools["git"]["available"]
         and tools["ssh"]["available"]
     )
@@ -67,7 +67,7 @@ def build_report() -> dict:
     blockers: list[str] = []
     if not auth["any_runpod_auth_env_present"]:
         blockers.append("No RUNPOD_API_KEY or RUNPOD_API_TOKEN is configured in this shell.")
-    if not tools["runpod"]["available"]:
+    if not tools["runpodctl"]["available"]:
         blockers.append("The runpod CLI is not available on PATH.")
     if not tools["git"]["available"]:
         blockers.append("git is not available on PATH.")
