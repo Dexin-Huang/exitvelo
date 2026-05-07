@@ -42,6 +42,10 @@ resolve. Mocap data is downloaded once via
 `python scripts/io/download_cmu_data.py` (writes
 `data/raw/cmu_subject_124/124.asf`, `124_07.amc`, `124_08.amc`).
 
+For RunPod / GPU setup (vectorized PPO at scale, future hybrid physics
+work, MJX ports), see `RUNPOD.md` — it covers pod selection, headless
+MuJoCo rendering, persistent storage, and per-job cost estimates.
+
 ## Reproduce key results
 
 Three commands. Run from the repo root with the project Python.
