@@ -6,32 +6,18 @@ import numpy as np
 import mujoco
 import imageio
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from src.motion.cmu_replay import CMUMocapReplay
-from src.env.contacts import detect_bat_ball_contact
+from src.env.contacts import (
+    detect_bat_ball_contact,
+    integrate_ball_with_drag as ball_step_drag,
+    nathan_exit_speed,
+    G,
+    Q_NATHAN,
+)
 
 SCALE = 1.343
 ROOT_OFFSET = np.array([0.010, 0.439, 0.0])
-G = np.array([0, 0, -9.81])
-
-# Drag model
-RHO = 1.2
-CD = 0.33
-R_BALL = 0.037
-A_BALL = np.pi * R_BALL**2
-M_BALL = 0.145
-DRAG_K = 0.5 * RHO * CD * A_BALL / M_BALL
-
-# Nathan collision
-Q_NATHAN = 0.18  # collision efficiency for sweet spot
-
-
-def ball_step_drag(pos, vel, dt):
-    speed = np.linalg.norm(vel)
-    drag = -DRAG_K * speed * vel if speed > 0 else np.zeros(3)
-    vel_new = vel + (G + drag) * dt
-    pos_new = pos + vel_new * dt
-    return pos_new, vel_new
 
 
 def main():

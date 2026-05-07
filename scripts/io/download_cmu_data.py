@@ -16,7 +16,7 @@ import urllib.error
 import sys
 import time
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data" / "raw" / "cmu_subject_124"
 
 # Ordered list of (filename, [url_option1, url_option2, ...])
