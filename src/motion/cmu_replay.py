@@ -111,6 +111,26 @@ class CMUMocapReplay:
         frame = min(frame, self.n_frames - 1)
         return self.qpos_trajectory[:, frame].copy()
 
+    def qpos_at(self, t_seconds: float) -> np.ndarray:
+        """Pure lookup: qpos at time `t_seconds`, linearly interpolated
+        between the two surrounding frames. Does not mutate `step_idx`.
+
+        Used by the named-residual controller to apply `swing_timing_s`
+        offsets without disturbing the underlying playback cursor.
+        """
+        # Clamp t_seconds to the valid range BEFORE computing alpha so
+        # negative offsets don't blend with frame 1.
+        t_max = (self.n_frames - 1) * self.control_dt
+        t_seconds = float(np.clip(t_seconds, 0.0, t_max))
+        frame_f = t_seconds / self.control_dt
+        frame_lo = int(np.floor(frame_f))
+        alpha = frame_f - frame_lo
+        frame_lo = max(0, min(frame_lo, self.n_frames - 1))
+        frame_hi = max(0, min(frame_lo + 1, self.n_frames - 1))
+        q_lo = self.qpos_trajectory[:, frame_lo]
+        q_hi = self.qpos_trajectory[:, frame_hi]
+        return q_lo * (1.0 - alpha) + q_hi * alpha
+
     def get_qvel(self, frame: int | None = None) -> np.ndarray:
         """Get the full qvel (62-dim) at a specific frame.
 
