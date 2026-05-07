@@ -9,18 +9,23 @@ COMS6998E (Deep Learning for Robotic Manipulation) course project, due
 
 ## Start here
 
-Read in this order. ~45 min to be productive.
+Read in this order. ~60 min to be productive.
 
-1. `PLAN.md` (10 min) — strategy, tier tree, what's done, what's killed,
+1. `GOAL.md` (10 min) - north star, research loop, evidence standards,
+   current truth vs long-term ambition.
+2. `PLAN.md` (10 min) — strategy, tier tree, what's done, what's killed,
    what's blocked.
-2. `SPEC.md` (15 min) — execution spec for the env refactor + optimizers,
+3. `SPEC.md` (15 min) — execution spec for the env refactor + optimizers,
    five review checkpoints A-E, Codex-verified ground truth on the env
    internals.
-3. `results/tier2_comparison.png` — headline figure: CMA-ES vs PPO vs
+4. `REFERENCES.md` (5 min) — papers + repos the project leans on
+   (vid2player3d, ASAP, RFC, MoCapAct, Nathan 2003, OpenBiomechanics, ...)
+   with one-line "what / why" each.
+5. `results/tier2_comparison.png` — headline figure: CMA-ES vs PPO vs
    zero-residual baseline on the 3-d action space.
-4. `src/optim/cma_runner.py` (5 min) — Tier 2A loop. Thin wrapper around
+6. `src/optim/cma_runner.py` (5 min) — Tier 2A loop. Thin wrapper around
    `cma` + the kinematic evaluator.
-5. `src/optim/kinematic_evaluator.py` (10 min) — the rollout pipeline that
+7. `src/optim/kinematic_evaluator.py` (10 min) — the rollout pipeline that
    both CMA-ES and PPO call into. Project memory (top of file) explains why
    the rollout is kinematic-humanoid + analytical-ball instead of full
    physics.
@@ -82,6 +87,7 @@ constraint and that is the highest-leverage place for outside help.
 ## File layout
 
 ```
+GOAL.md                     north star + research loop + evidence standards
 PLAN.md, SPEC.md            strategy + execution spec (read these first)
 src/env/                    cmu_batting_env.py, contacts.py (Nathan + drag + bounce)
 src/motion/                 cmu_replay.py (AMC parser, qpos_at(t) lookup)
