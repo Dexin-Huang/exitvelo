@@ -35,6 +35,7 @@ EVAL_FREQ="${EVAL_FREQ:-8192}"
 EVAL_EPISODES="${EVAL_EPISODES:-8}"
 EVAL_MIN_STEPS="${EVAL_MIN_STEPS:-10}"
 EVAL_PATIENCE="${EVAL_PATIENCE:-10}"
+WARM_START_PATH="${WARM_START_PATH:-}"
 BUILD_CUSTOM_MOCAP_HDF5="${BUILD_CUSTOM_MOCAP_HDF5:-1}"
 CUSTOM_MOCAP_PATH="${CUSTOM_MOCAP_PATH:-${EXITVELO_ROOT}/results/mocapact_custom_hdf5/CMU_124_07_from_amc_30hz.h5}"
 CUSTOM_MOCAP_CONTROL_DT="${CUSTOM_MOCAP_CONTROL_DT:-0.03}"
@@ -98,29 +99,34 @@ RUN_DIR_NAME="${RUN_DIR_NAME:-${CLIP_ID}_${START_STEP}_${MAX_STEPS}_${TOTAL_TIME
 LOG_PATH="${TRAIN_OUT_DIR}/${RUN_DIR_NAME}.log"
 echo "Training log: ${LOG_PATH}"
 
-python -m mocapact.clip_expert.train \
-  --clip_id="${CLIP_ID}" \
-  --mocap_path="${MOCAP_PATH}" \
-  --start_step="${START_STEP}" \
-  --max_steps="${MAX_STEPS}" \
-  --log_root="${TRAIN_OUT_DIR}" \
-  --total_timesteps="${TOTAL_TIMESTEPS}" \
-  --n_workers="${N_WORKERS}" \
-  --n_steps="${N_STEPS}" \
-  --n_epochs="${N_EPOCHS}" \
-  --batch_size="${BATCH_SIZE}" \
-  --n_layers="${N_LAYERS}" \
-  --layer_size="${LAYER_SIZE}" \
-  --device="${DEVICE}" \
-  --min_steps="${MIN_STEPS}" \
-  --termination_error_threshold="${TERMINATION_ERROR_THRESHOLD}" \
-  --act_noise="${ACT_NOISE}" \
-  --eval.freq="${EVAL_FREQ}" \
-  --eval.min_steps="${EVAL_MIN_STEPS}" \
-  --eval.n_rsi_episodes="${EVAL_EPISODES}" \
-  --eval.n_start_episodes="${EVAL_EPISODES}" \
-  --eval.early_stop.patience="${EVAL_PATIENCE}" \
-  2>&1 | tee "${LOG_PATH}"
+TRAIN_ARGS=(
+  --clip_id="${CLIP_ID}"
+  --mocap_path="${MOCAP_PATH}"
+  --start_step="${START_STEP}"
+  --max_steps="${MAX_STEPS}"
+  --log_root="${TRAIN_OUT_DIR}"
+  --total_timesteps="${TOTAL_TIMESTEPS}"
+  --n_workers="${N_WORKERS}"
+  --n_steps="${N_STEPS}"
+  --n_epochs="${N_EPOCHS}"
+  --batch_size="${BATCH_SIZE}"
+  --n_layers="${N_LAYERS}"
+  --layer_size="${LAYER_SIZE}"
+  --device="${DEVICE}"
+  --min_steps="${MIN_STEPS}"
+  --termination_error_threshold="${TERMINATION_ERROR_THRESHOLD}"
+  --act_noise="${ACT_NOISE}"
+  --eval.freq="${EVAL_FREQ}"
+  --eval.min_steps="${EVAL_MIN_STEPS}"
+  --eval.n_rsi_episodes="${EVAL_EPISODES}"
+  --eval.n_start_episodes="${EVAL_EPISODES}"
+  --eval.early_stop.patience="${EVAL_PATIENCE}"
+)
+if [[ -n "${WARM_START_PATH}" ]]; then
+  TRAIN_ARGS+=(--warm_start_path="${WARM_START_PATH}")
+fi
+
+python -m mocapact.clip_expert.train "${TRAIN_ARGS[@]}" 2>&1 | tee "${LOG_PATH}"
 
 ENV_PATH="${TRAIN_OUT_DIR}/${RUN_DIR_NAME}_environment.txt"
 {
