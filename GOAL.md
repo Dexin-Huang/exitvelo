@@ -76,6 +76,37 @@ Current state as of 2026-05-07:
   HDF5 has the target"; it is "run the Linux custom-`mocap_path` branch, then
   train a `CMU_124_07` clip expert if the custom path loads on Linux."
 
+Current state after the custom Linux branch, 2026-05-07 EDT / 2026-05-08 UTC:
+
+- The custom `mocap_path` branch ran on a real RTX 4090 RunPod pod from public
+  commit `0d0d086`.
+- `CMU_124_07` loaded and stepped from
+  `results/mocapact_custom_hdf5/CMU_124_07_from_amc_30hz.h5` on Linux.
+- The target window is now concrete: 100 Hz Exitvelo frames `260:360` map to
+  MoCapAct steps `87:120`, and the pod report records
+  `loaded=true`, `stepped=true`, `qpos_dim=126`, and `action_dim=56`.
+- Copied-back probe artifacts live under
+  `results/runpod_mocapact_probe_custom/`.
+- The copied rollout exports structurally through the local proxy adapter, but
+  the four-step probe rollout is not a trained swing: no contact,
+  `min_bat_ball_dist_m=1.1073`, `carry_ft=0`, and `bat_sweet` RMSE is about
+  `0.8468 m` against the kinematic target.
+- MoCapAct clip-expert training is confirmed to work on the custom target:
+  `mocapact.clip_expert.train --clip_id=CMU_124_07 --mocap_path=...`
+  trains on the `87-120` window.
+- Runtime fixes learned on the pod:
+  `scripts/runpod/mocapact_probe.sh` must export the repo root in
+  `PYTHONPATH`, and the MoCapAct venv should use a CUDA-compatible Torch
+  wheel (`torch==2.5.1+cu121` worked on the pod) instead of the default
+  CUDA-13 wheel that pip pulled initially.
+- A 512-step GPU smoke and an 8k-step seed clip expert completed and copied
+  back under `results/mocapact_clip_experts_custom_gpu_smoke/` and
+  `results/mocapact_clip_experts_custom_seed_8k/`.
+- The 8k seed is proof of training, not a finished tracker: final eval was
+  around `8` random-start steps and `9` start-state steps on a 33-step target
+  window, with mean reward around `1.29`/`1.43`. The next tracker run should
+  be longer and/or curriculum-adjusted before any task reward is added.
+
 Current intended pod-side command:
 
 ```bash
@@ -84,15 +115,16 @@ cd exitvelo
 BUILD_CUSTOM_MOCAP_HDF5=1 bash scripts/runpod/mocapact_probe.sh
 ```
 
-The probe should test these candidate windows by default:
+The custom probe now tests the exact target window by default when
+`BUILD_CUSTOM_MOCAP_HDF5=1` is set:
 
 | candidate | window | purpose |
 |---|---:|---|
 | `CMU_124_07` custom HDF5 | `87-120` | exact Exitvelo batting contact target, mapped from 100 Hz frames `260-360` |
-| `CMU_124_07` official HDF5 | `260-360` | historical failed probe; keep as evidence of official data absence |
-| `CMU_124_08` | `260-360` | secondary local subject-124 raw clip |
-| `CMU_124_06` | `0-189` | nearby subject-124 MoCapAct split fallback |
-| `CMU_016_22` | `0-82` | known MoCapAct install/control clip |
+
+The older official-HDF5 candidates remain historical evidence only:
+`CMU_124_07` and `CMU_124_08` were absent, while `CMU_124_06` and
+`CMU_016_22` validated the MoCapAct install/fallback path.
 
 Before launching a paid pod, verify that the public clone contains the current
 probe payload and the custom HDF5 converter. For the custom `CMU_124_07`
