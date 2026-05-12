@@ -1,0 +1,25 @@
+{
+  "source": "dm_control.suite.utils.parse_amc.convert",
+  "model": "dm_control.suite.humanoid_CMU",
+  "amc_path": "/workspace/exitvelo/data/raw/cmu_subject_124/124_07.amc",
+  "clip_id": "CMU_124_07",
+  "start_frame": 260,
+  "end_frame_inclusive": 359,
+  "rendered_frames": 100,
+  "control_dt": 0.01,
+  "output_fps": 30,
+  "camera_id": 0,
+  "qpos_shape": [
+    63,
+    1081
+  ],
+  "qvel_shape": [
+    62,
+    1080
+  ],
+  "duration_s": 0.99,
+  "pixel_std": 35.04389572143555,
+  "mp4": "results/visualization/trusted_source_cmu_replay_clean/CMU_124_07_trusted_replay_frames260_359.mp4",
+  "gif": "results/visualization/trusted_source_cmu_replay_clean/CMU_124_07_trusted_replay_frames260_359.gif",
+  "still": "results/visualization/trusted_source_cmu_replay_clean/CMU_124_07_trusted_replay_frames260_359_still.png"
+}

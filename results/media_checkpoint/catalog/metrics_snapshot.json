@@ -1,0 +1,247 @@
+{
+  "tee_ball_stages": [
+    {
+      "stage": "physical tee baseline",
+      "carry_ft": 2.9807784430879245,
+      "exit_speed_mph": 10.298784926481742,
+      "launch_angle_deg": -36.64112561676243,
+      "contact_step": 35
+    },
+    {
+      "stage": "first physical CEM",
+      "carry_ft": 4.616631639834932,
+      "exit_speed_mph": 12.181917790337927,
+      "launch_angle_deg": -23.987003342152907,
+      "contact_step": 35
+    },
+    {
+      "stage": "launch correction",
+      "carry_ft": 7.3547177454222235,
+      "exit_speed_mph": 10.102470288721188,
+      "launch_angle_deg": 0.8865924921278924,
+      "contact_step": 35
+    },
+    {
+      "stage": "speed recovery",
+      "carry_ft": 7.005794539588804,
+      "exit_speed_mph": 11.411603973370553,
+      "launch_angle_deg": -7.165718563859666,
+      "contact_step": 35,
+      "bat_speed_mps": 5.193415180234304
+    }
+  ],
+  "bat_speed_gate": {
+    "kinematic_contact_mps": 17.347948785323247,
+    "kinematic_peak_mps": 17.347948785323247,
+    "gate_mps": 10.0,
+    "physical_tball_speedrecover_mps": 5.193415180234304,
+    "no_ball_scale030_contact_mps": 7.545258230631866,
+    "no_ball_scale030_peak_mps": 7.684975001887884,
+    "no_ball_scale035_contact_mps": 8.301201162204631,
+    "no_ball_scale035_peak_mps": 8.452869259890187,
+    "physical_contact_step": 35,
+    "kinematic_contact_step": 9
+  },
+  "traces": {
+    "tball_launch": [
+      {
+        "iteration": 0,
+        "best_score": -20.138456122132162,
+        "best_frames": 95,
+        "best_contact": 35,
+        "best_launch_step": 45,
+        "best_exit_speed_mph": 11.471988905260625,
+        "best_carry_ft": 6.905868124726132,
+        "best_launch_angle_deg": -7.94656361163284,
+        "mean_std": 0.00961266178637743
+      },
+      {
+        "iteration": 1,
+        "best_score": -21.93867423623935,
+        "best_frames": 95,
+        "best_contact": 35,
+        "best_launch_step": 45,
+        "best_exit_speed_mph": 10.521134996698068,
+        "best_carry_ft": 7.359445180546464,
+        "best_launch_angle_deg": -1.439706917054178,
+        "mean_std": 0.007890616543591022
+      },
+      {
+        "iteration": 2,
+        "best_score": -21.94878944046404,
+        "best_frames": 95,
+        "best_contact": 35,
+        "best_launch_step": 45,
+        "best_exit_speed_mph": 10.553465468998684,
+        "best_carry_ft": 7.3640741724086345,
+        "best_launch_angle_deg": -1.5625817178204329,
+        "mean_std": 0.005703346338123083
+      },
+      {
+        "iteration": 3,
+        "best_score": -22.000093894405182,
+        "best_frames": 95,
+        "best_contact": 35,
+        "best_launch_step": 39,
+        "best_exit_speed_mph": 10.102470288721188,
+        "best_carry_ft": 7.3547177454222235,
+        "best_launch_angle_deg": 0.8865924921278924,
+        "mean_std": 0.004495700821280479
+      }
+    ],
+    "tball_speedrecover": [
+      {
+        "iteration": 0,
+        "best_score": -9.800796363785736,
+        "best_frames": 95,
+        "best_contact": 35,
+        "best_launch_step": 45,
+        "best_exit_speed_mph": 11.761988224575381,
+        "best_carry_ft": 6.692234453055077,
+        "best_launch_angle_deg": -10.014153154063544,
+        "best_bat_speed_mps": 5.203587041713814,
+        "mean_std": 0.021206161007285118
+      },
+      {
+        "iteration": 1,
+        "best_score": -9.965424526714823,
+        "best_frames": 95,
+        "best_contact": 35,
+        "best_launch_step": 45,
+        "best_exit_speed_mph": 11.512793942858478,
+        "best_carry_ft": 6.935010424265981,
+        "best_launch_angle_deg": -7.900586015186033,
+        "best_bat_speed_mps": 5.192679613929675,
+        "mean_std": 0.01584267057478428
+      },
+      {
+        "iteration": 2,
+        "best_score": -9.918351843295639,
+        "best_frames": 95,
+        "best_contact": 35,
+        "best_launch_step": 45,
+        "best_exit_speed_mph": 11.191507266300782,
+        "best_carry_ft": 7.141697384388118,
+        "best_launch_angle_deg": -5.60126109577322,
+        "best_bat_speed_mps": 5.185921499761479,
+        "mean_std": 0.012353545054793358
+      },
+      {
+        "iteration": 3,
+        "best_score": -9.783370306805459,
+        "best_frames": 95,
+        "best_contact": 35,
+        "best_launch_step": 45,
+        "best_exit_speed_mph": 11.160109946964159,
+        "best_carry_ft": 7.135650449853433,
+        "best_launch_angle_deg": -5.5201958799655495,
+        "best_bat_speed_mps": 5.181675692022808,
+        "mean_std": 0.010118338279426098
+      },
+      {
+        "iteration": 4,
+        "best_score": -10.02355899380674,
+        "best_frames": 95,
+        "best_contact": 35,
+        "best_launch_step": 45,
+        "best_exit_speed_mph": 11.411603973370553,
+        "best_carry_ft": 7.005794539588804,
+        "best_launch_angle_deg": -7.165718563859666,
+        "best_bat_speed_mps": 5.193415180234304,
+        "mean_std": 0.008582205511629581
+      }
+    ],
+    "batspeed_scale030": [
+      {
+        "iteration": 0,
+        "best_score": -111.1076506705512,
+        "best_frames": 95,
+        "best_peak_speed_mps": 7.296824750282108,
+        "best_contact_speed_mps": 7.260444292389632,
+        "best_target_contact_speed_mps": 17.347948785323247,
+        "best_speed_rmse_mps": 6.478461332942766,
+        "best_body": 0.14982242194628562,
+        "mean_std": 0.06705258041620255
+      },
+      {
+        "iteration": 1,
+        "best_score": -110.39813396066465,
+        "best_frames": 95,
+        "best_peak_speed_mps": 7.295085767191792,
+        "best_contact_speed_mps": 7.239644533571205,
+        "best_target_contact_speed_mps": 17.347948785323247,
+        "best_speed_rmse_mps": 6.490080857734741,
+        "best_body": 0.1590396615329899,
+        "mean_std": 0.05613602325320244
+      },
+      {
+        "iteration": 2,
+        "best_score": -121.7583472545414,
+        "best_frames": 95,
+        "best_peak_speed_mps": 7.524496526038559,
+        "best_contact_speed_mps": 7.434114047818761,
+        "best_target_contact_speed_mps": 17.347948785323247,
+        "best_speed_rmse_mps": 6.396555715304272,
+        "best_body": 0.1563925142324889,
+        "mean_std": 0.04616460204124451
+      },
+      {
+        "iteration": 3,
+        "best_score": -126.701824172764,
+        "best_frames": 95,
+        "best_peak_speed_mps": 7.637219303516919,
+        "best_contact_speed_mps": 7.512414805850944,
+        "best_target_contact_speed_mps": 17.347948785323247,
+        "best_speed_rmse_mps": 6.359200636428984,
+        "best_body": 0.15125756893767103,
+        "mean_std": 0.03976995870471001
+      },
+      {
+        "iteration": 4,
+        "best_score": -128.7544335719953,
+        "best_frames": 95,
+        "best_peak_speed_mps": 7.684975001887884,
+        "best_contact_speed_mps": 7.545258230631866,
+        "best_target_contact_speed_mps": 17.347948785323247,
+        "best_speed_rmse_mps": 6.3295791274823685,
+        "best_body": 0.15079177845249087,
+        "mean_std": 0.03383684903383255
+      }
+    ],
+    "batspeed_scale035_partial": [
+      {
+        "iteration": 0,
+        "best_score": -187.9410768936038,
+        "best_frames": 95,
+        "best_peak_speed_mps": 8.417183407454377,
+        "best_contact_speed_mps": 8.086851154247375,
+        "best_target_contact_speed_mps": 17.347948785323247,
+        "best_speed_rmse_mps": 5.990766898267093,
+        "best_body": 0.15684175784679788,
+        "mean_std": 0.04177626967430115
+      },
+      {
+        "iteration": 1,
+        "best_score": -193.67025839891,
+        "best_frames": 95,
+        "best_peak_speed_mps": 8.47593092518418,
+        "best_contact_speed_mps": 8.235932892860811,
+        "best_target_contact_speed_mps": 17.347948785323247,
+        "best_speed_rmse_mps": 5.9442307173461195,
+        "best_body": 0.15677729532781545,
+        "mean_std": 0.03536059334874153
+      },
+      {
+        "iteration": 2,
+        "best_score": -195.21700982395356,
+        "best_frames": 95,
+        "best_peak_speed_mps": 8.452869259890187,
+        "best_contact_speed_mps": 8.301201162204631,
+        "best_target_contact_speed_mps": 17.347948785323247,
+        "best_speed_rmse_mps": 5.881693971881973,
+        "best_body": 0.15417329660826554,
+        "mean_std": 0.027546904981136322
+      }
+    ]
+  }
+}

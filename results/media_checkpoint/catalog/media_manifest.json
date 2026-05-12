@@ -1,0 +1,110 @@
+[
+  {
+    "slug": "01_source_mocap_trusted_replay",
+    "title": "Source CMU mocap replay",
+    "role": "source",
+    "notes": "Canonical batting motion segment used as the human reference.",
+    "source": "results\\downloads\\canonical_source_CMU_124_07_trusted_replay_clean_frames260_359.mp4",
+    "video": "results\\media_checkpoint\\videos\\01_source_mocap_trusted_replay.mp4",
+    "still": "results\\media_checkpoint\\stills\\01_source_mocap_trusted_replay_still.png",
+    "contact_sheet": "results\\media_checkpoint\\stills\\01_source_mocap_trusted_replay_contact_sheet.png",
+    "duration_s": 3.333333,
+    "bytes": 121234
+  },
+  {
+    "slug": "02_physical_imitation_clean",
+    "title": "Approved physical imitation",
+    "role": "imitation",
+    "notes": "MoCapAct physical tracker candidate without bat or ball.",
+    "source": "results\\downloads\\CMU_124_07_stride1_residual_knots12_speedkick3860_physical_only.mp4",
+    "video": "results\\media_checkpoint\\videos\\02_physical_imitation_clean.mp4",
+    "still": "results\\media_checkpoint\\stills\\02_physical_imitation_clean_still.png",
+    "contact_sheet": "results\\media_checkpoint\\stills\\02_physical_imitation_clean_contact_sheet.png",
+    "duration_s": 3.166667,
+    "bytes": 135011
+  },
+  {
+    "slug": "03_physical_imitation_overlay",
+    "title": "Physical imitation with ghost reference",
+    "role": "imitation audit",
+    "notes": "Overlay used to visually approve that the physical body tracks the swing.",
+    "source": "results\\downloads\\CMU_124_07_stride1_residual_knots12_speedkick3860_best_with_ghost.mp4",
+    "video": "results\\media_checkpoint\\videos\\03_physical_imitation_overlay.mp4",
+    "still": "results\\media_checkpoint\\stills\\03_physical_imitation_overlay_still.png",
+    "contact_sheet": "results\\media_checkpoint\\stills\\03_physical_imitation_overlay_contact_sheet.png",
+    "duration_s": 3.166667,
+    "bytes": 186245
+  },
+  {
+    "slug": "04_virtual_bat_tball",
+    "title": "Virtual bat tee-ball search",
+    "role": "task warmup",
+    "notes": "Early task-objective stage before massful bat/contact was introduced.",
+    "source": "results\\downloads\\CMU_124_07_virtual_bat_tball_speedkick3860_twohand_visible_kinematic_bat.mp4",
+    "video": "results\\media_checkpoint\\videos\\04_virtual_bat_tball.mp4",
+    "still": "results\\media_checkpoint\\stills\\04_virtual_bat_tball_still.png",
+    "contact_sheet": "results\\media_checkpoint\\stills\\04_virtual_bat_tball_contact_sheet.png",
+    "duration_s": 3.166667,
+    "bytes": 211598
+  },
+  {
+    "slug": "05_massful_old_bat_clean",
+    "title": "Massful old bat attachment",
+    "role": "asset validation",
+    "notes": "Original bat mesh attached to the physical hand with no ball.",
+    "source": "results\\downloads\\CMU_124_07_old_bat_asset_geom_stage2_twohand_stride1_clean.mp4",
+    "video": "results\\media_checkpoint\\videos\\05_massful_old_bat_clean.mp4",
+    "still": "results\\media_checkpoint\\stills\\05_massful_old_bat_clean_still.png",
+    "contact_sheet": "results\\media_checkpoint\\stills\\05_massful_old_bat_clean_contact_sheet.png",
+    "duration_s": 3.166667,
+    "bytes": 149444
+  },
+  {
+    "slug": "06_physical_tball_launchfloor",
+    "title": "Physical tee-ball launch correction",
+    "role": "contact result",
+    "notes": "Best tee-ball carry checkpoint: launch angle becomes slightly positive.",
+    "source": "results\\downloads\\CMU_124_07_physical_tball_distance_cont_pop14_iter4_launchfloor.mp4",
+    "video": "results\\media_checkpoint\\videos\\06_physical_tball_launchfloor.mp4",
+    "still": "results\\media_checkpoint\\stills\\06_physical_tball_launchfloor_still.png",
+    "contact_sheet": "results\\media_checkpoint\\stills\\06_physical_tball_launchfloor_contact_sheet.png",
+    "duration_s": 3.166667,
+    "bytes": 204386
+  },
+  {
+    "slug": "07_physical_tball_speedrecover",
+    "title": "Physical tee-ball speed-recovery attempt",
+    "role": "negative result",
+    "notes": "CEM can shape launch but cannot recover enough bat speed with the current tracker.",
+    "source": "results\\downloads\\CMU_124_07_physical_tball_distance_speedrecover_pop18_iter5.mp4",
+    "video": "results\\media_checkpoint\\videos\\07_physical_tball_speedrecover.mp4",
+    "still": "results\\media_checkpoint\\stills\\07_physical_tball_speedrecover_still.png",
+    "contact_sheet": "results\\media_checkpoint\\stills\\07_physical_tball_speedrecover_contact_sheet.png",
+    "duration_s": 3.166667,
+    "bytes": 203429
+  },
+  {
+    "slug": "08_batspeed_imitation_scale030",
+    "title": "No-ball bat-speed imitation pass",
+    "role": "diagnostic result",
+    "notes": "No-ball speed gate run improves contact speed to 7.55 m/s.",
+    "source": "results\\downloads\\CMU_124_07_batspeed_imitation_scale030.mp4",
+    "video": "results\\media_checkpoint\\videos\\08_batspeed_imitation_scale030.mp4",
+    "still": "results\\media_checkpoint\\stills\\08_batspeed_imitation_scale030_still.png",
+    "contact_sheet": "results\\media_checkpoint\\stills\\08_batspeed_imitation_scale030_contact_sheet.png",
+    "duration_s": 3.166667,
+    "bytes": 233095
+  },
+  {
+    "slug": "09_batspeed_imitation_scale035_cont_iter2",
+    "title": "No-ball bat-speed continuation checkpoint",
+    "role": "diagnostic result",
+    "notes": "Stopped checkpoint improves contact speed to 8.30 m/s, still below the 10 m/s gate.",
+    "source": "results\\downloads\\CMU_124_07_batspeed_imitation_scale035_cont_iter2.mp4",
+    "video": "results\\media_checkpoint\\videos\\09_batspeed_imitation_scale035_cont_iter2.mp4",
+    "still": "results\\media_checkpoint\\stills\\09_batspeed_imitation_scale035_cont_iter2_still.png",
+    "contact_sheet": "results\\media_checkpoint\\stills\\09_batspeed_imitation_scale035_cont_iter2_contact_sheet.png",
+    "duration_s": 3.166667,
+    "bytes": 240261
+  }
+]

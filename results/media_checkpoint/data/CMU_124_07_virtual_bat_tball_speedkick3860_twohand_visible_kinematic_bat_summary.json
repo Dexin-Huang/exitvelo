@@ -1,0 +1,18 @@
+{
+  "status": "visible_kinematic_bat_overlay_rendered",
+  "source_summary": "/workspace/exitvelo/results/mocapact_residual_ppo/virtual_bat_tball_speedkick3860_twohand_pop16_iter2/summary.json",
+  "source_residual": "/workspace/exitvelo/results/mocapact_residual_ppo/virtual_bat_tball_speedkick3860_twohand_pop16_iter2/best_residual.npy",
+  "out_video": "/workspace/exitvelo/results/mocapact_residual_ppo/virtual_bat_tball_speedkick3860_twohand_pop16_iter2/visible_kinematic_bat.mp4",
+  "out_contact_frame": "/workspace/exitvelo/results/mocapact_residual_ppo/virtual_bat_tball_speedkick3860_twohand_pop16_iter2/visible_kinematic_bat_contact.png",
+  "frames": 95,
+  "contact_step": 26,
+  "bat_contract": {
+    "physical_effect_on_body": false,
+    "contact_enabled": false,
+    "mass_added": false,
+    "rendered_as": "2D projection of same two-hand virtual bat sites over MoCapAct RGB frames",
+    "grip": "weighted midpoint of right/left hand end-effectors",
+    "sweet_offset_m": 0.75,
+    "tip_offset_m": 0.9
+  }
+}
